@@ -1,10 +1,10 @@
 pipeline {
-    agent { label 'jenkins-agent' }
+    agent { label 'Jenkins-Agent' }
     tools {
         jdk 'Java17'
         maven 'Maven3'
     }
-
+    
     stages{
         stage("Cleanup Workspace"){
                 steps {
@@ -14,14 +14,14 @@ pipeline {
 
         stage("Checkout from SCM"){
                 steps {
-                    git branch: 'main', credentialsId: 'github-access', url: 'https://github.com/Ashfaque-9x/register-app.git'
+                    git branch: 'main', credentialsId: 'github', url: 'https://github.com/”github userid”/register-app'
                 }
         }
 
         stage("Build Application"){
             steps {
                 sh "mvn clean package"
-              }
+            }
 
        }
 
@@ -40,5 +40,14 @@ pipeline {
 	           }	
            }
        }
+
+       stage("Quality Gate"){
+           steps {
+               script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'jenkins-sonarqube-token'
+                }	
+            }
+
+        }
     }
 }
